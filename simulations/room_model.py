@@ -19,5 +19,17 @@ def step_room(T: float, heater_on: int, T_out: float, R: float, C: float, P: flo
     # Hint: Use the Euler method to integrate the differential equation.
     # RC model: dT/dt = (T_out - T)/(R*C) + heater_on * P/C + noise
     
+    # Compute the thermal derivative using the room RC model.
+    dT_dt = (T_out - T) / (R * C) + heater_on * P / C
+
+    # Add process noise if requested.
+    if process_sigma > 0:
+        if rng is None:
+            raise ValueError("rng must be provided when process_sigma > 0")
+        dT_dt += rng.gauss(0.0, process_sigma) / dt
+
+    # Euler update for one time step.
+    T_next = T + dT_dt * dt
+    return T_next
+
     # --- Student code ends here ---
-    return 0.0 # remove when code is added
